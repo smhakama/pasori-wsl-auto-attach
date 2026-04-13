@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="backdrop"></div>
+    <main class="shell">
+      <header class="hero reveal">
+        <p class="eyebrow">PaSoRi Attendance</p>
+        <h1>勤怠ログ コンソール</h1>
+        <p class="lead">IC UID の登録と打刻、最新ログの確認をこの画面で行えます。</p>
+      </header>
+
+      <section class="grid">
+        <article class="card reveal delay-1">
+          <h2>社員登録</h2>
+          <form id="user-form" class="stack">
+            <label>
+              UID
+              <input type="text" name="uid" placeholder="0123456789AB" required />
+            </label>
+            <label>
+              名前
+              <input type="text" name="name" placeholder="山田 太郎" required />
+            </label>
+            <button type="submit">登録 / 更新</button>
+          </form>
+        </article>
+
+        <article class="card reveal delay-2">
+          <h2>打刻テスト</h2>
+          <form id="tap-form" class="stack">
+            <label>
+              UID
+              <input type="text" name="uid" placeholder="0123456789AB" required />
+            </label>
+            <button type="submit">打刻実行</button>
+          </form>
+          <p id="tap-result" class="hint">まだ打刻していません。</p>
+        </article>
+      </section>
+
+      <section class="card reveal delay-3">
+        <div class="row">
+          <h2>最新ログ</h2>
+          <button id="reload" type="button">更新</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>UID</th>
+                <th>名前</th>
+                <th>区分</th>
+                <th>時刻</th>
+              </tr>
+            </thead>
+            <tbody id="logs-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <p id="status" class="status"></p>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

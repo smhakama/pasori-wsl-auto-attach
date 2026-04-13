@@ -17,6 +17,18 @@ npm start
 
 Server starts at `http://localhost:3000`.
 
+## Dashboard
+
+Open this page in browser after startup:
+
+`http://localhost:3000`
+
+You can:
+
+- register users (`UID` + `name`)
+- test card tap (`UID`)
+- view recent logs
+
 ## Endpoints
 
 ### Health check
