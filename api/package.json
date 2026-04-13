@@ -1,0 +1,14 @@
+{
+  "name": "pasori-attendance-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Minimal attendance API for PaSoRi/IC UID input",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "sqlite3": "^5.1.7"
+  }
+}
