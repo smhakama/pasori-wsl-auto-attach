@@ -43,6 +43,7 @@ body {
 .hero,
 .card {
   background: var(--panel);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   border: 1px solid #ffffff;
   border-radius: 18px;
