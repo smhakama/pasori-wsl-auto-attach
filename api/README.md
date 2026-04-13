@@ -58,6 +58,12 @@ Response example:
 }
 ```
 
+Tap guard is enabled by default (3 seconds) to prevent accidental duplicate taps.
+
+You can change it with environment variable:
+
+TAP_GUARD_SECONDS=5 npm start
+
 ### Register or update user
 
 ```http
@@ -83,3 +89,11 @@ GET /api/logs?limit=100
 ```
 
 Response contains `name` when UID is registered.
+
+### Daily summary
+
+```http
+GET /api/summary/daily?date=2026-04-14
+```
+
+`date` is optional. If omitted, today is used.

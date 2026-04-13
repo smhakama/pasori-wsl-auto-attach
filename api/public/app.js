@@ -85,6 +85,10 @@ tapForm.addEventListener('submit', async (event) => {
     });
 
     if (!response.ok) {
+      if (response.status === 429) {
+        const body = await response.json();
+        throw new Error(`連続打刻を防止しました（${body.guardSeconds}秒待って再試行）`);
+      }
       throw new Error('打刻に失敗しました');
     }
 

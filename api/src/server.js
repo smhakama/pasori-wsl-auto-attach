@@ -1,10 +1,11 @@
 const express = require('express');
 const path = require('path');
-const { toggleAttendance, listLogs } = require('./attendanceService');
+const { toggleAttendance, listLogs, getDailySummary } = require('./attendanceService');
 const { upsertUser, listUsers } = require('./userService');
 
 const app = express();
 const port = process.env.PORT || 3000;
+const tapGuardSeconds = Number.parseInt(process.env.TAP_GUARD_SECONDS || '3', 10);
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
@@ -22,9 +23,18 @@ app.post('/api/tap', async (req, res) => {
       return;
     }
 
-    const result = await toggleAttendance(uid);
+    const result = await toggleAttendance(uid, { guardSeconds: tapGuardSeconds });
     res.status(201).json(result);
   } catch (error) {
+    if (error && error.code === 'TAP_TOO_SOON') {
+      res.status(429).json({
+        error: 'tap too soon',
+        guardSeconds: tapGuardSeconds,
+        details: error.details,
+      });
+      return;
+    }
+
     res.status(500).json({ error: 'internal error' });
   }
 });
@@ -61,6 +71,23 @@ app.get('/api/users', async (req, res) => {
   try {
     const users = await listUsers();
     res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'internal error' });
+  }
+});
+
+app.get('/api/summary/daily', async (req, res) => {
+  try {
+    const date = String(req.query.date || '').trim();
+    const targetDate = date || new Date().toISOString().slice(0, 10);
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(targetDate)) {
+      res.status(400).json({ error: 'date must be YYYY-MM-DD' });
+      return;
+    }
+
+    const rows = await getDailySummary(targetDate);
+    res.json({ date: targetDate, users: rows });
   } catch (error) {
     res.status(500).json({ error: 'internal error' });
   }
