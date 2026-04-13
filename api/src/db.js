@@ -6,6 +6,14 @@ const db = new sqlite3.Database(dbPath);
 
 db.serialize(() => {
   db.run(`
+    CREATE TABLE IF NOT EXISTS users (
+      uid TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  db.run(`
     CREATE TABLE IF NOT EXISTS attendance_logs (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       uid TEXT NOT NULL,

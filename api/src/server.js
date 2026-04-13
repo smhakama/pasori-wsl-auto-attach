@@ -1,5 +1,6 @@
 const express = require('express');
 const { toggleAttendance, listLogs } = require('./attendanceService');
+const { upsertUser, listUsers } = require('./userService');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -32,6 +33,32 @@ app.get('/api/logs', async (req, res) => {
     const safeLimit = Math.min(Math.max(limit, 1), 1000);
     const logs = await listLogs(safeLimit);
     res.json(logs);
+  } catch (error) {
+    res.status(500).json({ error: 'internal error' });
+  }
+});
+
+app.post('/api/users', async (req, res) => {
+  try {
+    const uid = String(req.body.uid || '').trim();
+    const name = String(req.body.name || '').trim();
+
+    if (!uid || !name) {
+      res.status(400).json({ error: 'uid and name are required' });
+      return;
+    }
+
+    const user = await upsertUser(uid, name);
+    res.status(201).json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'internal error' });
+  }
+});
+
+app.get('/api/users', async (req, res) => {
+  try {
+    const users = await listUsers();
+    res.json(users);
   } catch (error) {
     res.status(500).json({ error: 'internal error' });
   }

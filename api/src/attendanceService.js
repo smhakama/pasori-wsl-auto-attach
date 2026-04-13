@@ -41,7 +41,11 @@ async function toggleAttendance(uid) {
 function listLogs(limit = 100) {
   return new Promise((resolve, reject) => {
     db.all(
-      `SELECT id, uid, action, created_at FROM attendance_logs ORDER BY id DESC LIMIT ?`,
+      `SELECT l.id, l.uid, u.name, l.action, l.created_at
+       FROM attendance_logs l
+       LEFT JOIN users u ON u.uid = l.uid
+       ORDER BY l.id DESC
+       LIMIT ?`,
       [limit],
       (err, rows) => {
         if (err) {

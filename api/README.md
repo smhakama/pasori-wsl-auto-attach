@@ -46,8 +46,28 @@ Response example:
 }
 ```
 
+### Register or update user
+
+```http
+POST /api/users
+Content-Type: application/json
+
+{
+  "uid": "0123456789AB",
+  "name": "Makoto"
+}
+```
+
+### List users
+
+```http
+GET /api/users
+```
+
 ### List logs
 
 ```http
 GET /api/logs?limit=100
 ```
+
+Response contains `name` when UID is registered.
