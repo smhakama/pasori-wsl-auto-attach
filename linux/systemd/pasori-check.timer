@@ -1,0 +1,10 @@
+[Unit]
+Description=Run PaSoRi check every 5 seconds
+
+[Timer]
+OnBootSec=5
+OnUnitActiveSec=5
+Unit=pasori-check.service
+
+[Install]
+WantedBy=timers.target

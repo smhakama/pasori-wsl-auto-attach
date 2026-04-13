@@ -1,0 +1,6 @@
+[Unit]
+Description=PaSoRi check service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/pasori-check.sh
