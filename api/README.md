@@ -23,11 +23,39 @@ Open this page in browser after startup:
 
 `http://localhost:3000`
 
+
 You can:
 
 - register users (`UID` + `name`)
 - test card tap (`UID`)
 - view recent logs
+
+## PaSoRi自動打刻連携
+
+PaSoRiリーダーでICカードをかざすと自動で /api/tap へPOSTします。
+
+### 使い方
+
+1. 依存インストール
+  ```powershell
+  cd api
+  npm install
+  ```
+2. 勤怠APIサーバ起動
+  ```powershell
+  npm start
+  ```
+3. 新しいターミナルでPaSoRi連携スクリプト起動
+  ```powershell
+  node nfc-tap-poster.js
+  ```
+4. カードをかざすと自動で打刻されます
+
+環境変数でAPI URLやガード秒数を変更可能:
+
+```
+API_URL=http://localhost:3000/api/tap TAP_GUARD_SECONDS=5 node nfc-tap-poster.js
+```
 
 ## Endpoints
 
