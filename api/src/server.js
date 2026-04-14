@@ -1,6 +1,39 @@
 const express = require('express');
 const path = require('path');
-const { toggleAttendance, listLogs, getDailySummary } = require('./attendanceService');
+const { toggleAttendance, listLogs, getDailySummary, getMonthlySummary, exportLogsCsv } = require('./attendanceService');
+const parseYearMonth = (str) => {
+  const m = /^([0-9]{4})-([0-9]{2})$/.exec(str);
+  if (!m) return null;
+  return { year: Number(m[1]), month: Number(m[2]) };
+};
+// CSVエクスポートAPI
+app.get('/api/logs.csv', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const csv = await exportLogsCsv({ from, to });
+    res.setHeader('Content-Type', 'text/csv; charset=UTF-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="attendance_logs.csv"');
+    res.send(csv);
+  } catch (error) {
+    res.status(500).json({ error: 'internal error' });
+  }
+});
+
+// 月次サマリーAPI
+app.get('/api/summary/monthly', async (req, res) => {
+  try {
+    const ym = String(req.query.ym || '').trim();
+    const parsed = parseYearMonth(ym);
+    if (!parsed) {
+      res.status(400).json({ error: 'ym must be YYYY-MM' });
+      return;
+    }
+    const rows = await getMonthlySummary(parsed.year, parsed.month);
+    res.json({ ym, rows });
+  } catch (error) {
+    res.status(500).json({ error: 'internal error' });
+  }
+});
 const { upsertUser, listUsers } = require('./userService');
 
 const app = express();

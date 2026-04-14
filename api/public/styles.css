@@ -141,6 +141,12 @@ td {
   font-size: 0.9rem;
 }
 
+tr.unregistered, tr.unregistered td {
+  background: #fff3cd !important;
+  color: #7a4f01 !important;
+}
+}
+
 th {
   color: var(--muted);
   font-weight: 700;

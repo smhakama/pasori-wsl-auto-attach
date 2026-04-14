@@ -47,10 +47,15 @@
         </article>
       </section>
 
+
       <section class="card reveal delay-3">
         <div class="row">
           <h2>最新ログ</h2>
-          <button id="reload" type="button">更新</button>
+          <div>
+            <button id="reload" type="button">更新</button>
+            <button id="csv-export" type="button">CSV出力</button>
+            <button id="monthly-export" type="button">月次サマリー</button>
+          </div>
         </div>
         <div class="table-wrap">
           <table>
@@ -66,6 +71,7 @@
             <tbody id="logs-body"></tbody>
           </table>
         </div>
+        <div id="monthly-summary" class="table-wrap" style="margin-top:1.2rem;"></div>
       </section>
 
       <p id="status" class="status"></p>

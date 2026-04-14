@@ -144,4 +144,66 @@ module.exports = {
   toggleAttendance,
   listLogs,
   getDailySummary,
+  getMonthlySummary,
+  exportLogsCsv,
 };
+
+// --- CSVエクスポート ---
+function exportLogsCsv({ from, to }) {
+  return new Promise((resolve, reject) => {
+    let where = [];
+    let params = [];
+    if (from) {
+      where.push("date(l.created_at, 'localtime') >= ?");
+      params.push(from);
+    }
+    if (to) {
+      where.push("date(l.created_at, 'localtime') <= ?");
+      params.push(to);
+    }
+    const whereClause = where.length ? 'WHERE ' + where.join(' AND ') : '';
+    const sql = `SELECT l.id, l.uid, COALESCE(u.name, '') AS name, l.action, l.created_at
+      FROM attendance_logs l
+      LEFT JOIN users u ON u.uid = l.uid
+      ${whereClause}
+      ORDER BY l.id ASC`;
+    db.all(sql, params, (err, rows) => {
+      if (err) return reject(err);
+      // CSVヘッダ
+      let csv = 'id,uid,name,action,created_at\n';
+      for (const row of rows) {
+        csv += `${row.id},${row.uid},${row.name},${row.action},${row.created_at}\n`;
+      }
+      resolve(csv);
+    });
+  });
+}
+
+// --- 月次サマリー ---
+function getMonthlySummary(year, month) {
+  return new Promise((resolve, reject) => {
+    const ym = `${year}-${String(month).padStart(2, '0')}`;
+    db.all(
+      `SELECT
+         l.uid,
+         COALESCE(u.name, '') AS name,
+         strftime('%Y-%m-%d', l.created_at, 'localtime') AS date,
+         SUM(CASE WHEN l.action = 'IN' THEN 1 ELSE 0 END) AS in_count,
+         SUM(CASE WHEN l.action = 'OUT' THEN 1 ELSE 0 END) AS out_count,
+         MAX(l.created_at) AS last_tap_at
+       FROM attendance_logs l
+       LEFT JOIN users u ON u.uid = l.uid
+       WHERE strftime('%Y-%m', l.created_at, 'localtime') = ?
+       GROUP BY l.uid, u.name, date
+       ORDER BY l.uid ASC, date ASC`,
+      [ym],
+      (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(rows);
+      }
+    );
+  });
+}

@@ -24,11 +24,29 @@ Open this page in browser after startup:
 `http://localhost:3000`
 
 
+
 You can:
 
 - register users (`UID` + `name`)
 - test card tap (`UID`)
-- view recent logs
+- view recent logs (unregistered UID rows are highlighted)
+- export logs as CSV (button)
+- view monthly summary (button)
+## CSVエクスポート
+
+`/api/logs.csv?from=YYYY-MM-DD&to=YYYY-MM-DD` でCSVダウンロード
+
+画面の「CSV出力」ボタンからも取得可能
+
+## 月次サマリー
+
+`/api/summary/monthly?ym=YYYY-MM` で月次集計取得
+
+画面の「月次サマリー」ボタンからも取得・表示可能
+
+## 未登録UIDの強調表示
+
+ログ・サマリー表で未登録UIDは黄色背景で強調されます
 
 ## PaSoRi自動打刻連携
 

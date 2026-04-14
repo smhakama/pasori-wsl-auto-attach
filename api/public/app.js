@@ -26,16 +26,60 @@ function renderLogs(logs) {
 
   logsBody.innerHTML = logs
     .map((log) => {
-      const name = log.name || '-';
-      return `<tr>
+      const name = log.name || '';
+      const isUnregistered = !name;
+      return `<tr${isUnregistered ? ' class="unregistered"' : ''}>
         <td>${escapeHtml(log.id)}</td>
         <td>${escapeHtml(log.uid)}</td>
-        <td>${escapeHtml(name)}</td>
+        <td>${escapeHtml(name || '未登録')}</td>
         <td>${escapeHtml(log.action)}</td>
         <td>${escapeHtml(log.created_at)}</td>
       </tr>`;
     })
     .join('');
+}
+// CSVエクスポート
+document.getElementById('csv-export').addEventListener('click', () => {
+  window.open('/api/logs.csv', '_blank');
+});
+
+// 月次サマリー
+document.getElementById('monthly-export').addEventListener('click', async () => {
+  const ym = prompt('集計する年月 (例: 2026-04)');
+  if (!/^\d{4}-\d{2}$/.test(ym)) {
+    setStatus('YYYY-MM形式で入力してください');
+    return;
+  }
+  try {
+    const res = await fetch(`/api/summary/monthly?ym=${encodeURIComponent(ym)}`);
+    if (!res.ok) throw new Error('月次サマリー取得失敗');
+    const { rows } = await res.json();
+    renderMonthlySummary(rows, ym);
+    setStatus(`${ym} の月次サマリーを表示しました`);
+  } catch (e) {
+    setStatus(e.message);
+  }
+});
+
+function renderMonthlySummary(rows, ym) {
+  const el = document.getElementById('monthly-summary');
+  if (!rows || !rows.length) {
+    el.innerHTML = `<p>${ym} のデータはありません。</p>`;
+    return;
+  }
+  let html = `<table><thead><tr><th>UID</th><th>名前</th><th>日付</th><th>IN</th><th>OUT</th><th>最終打刻</th></tr></thead><tbody>`;
+  for (const r of rows) {
+    html += `<tr${!r.name ? ' class="unregistered"' : ''}>
+      <td>${escapeHtml(r.uid)}</td>
+      <td>${escapeHtml(r.name || '未登録')}</td>
+      <td>${escapeHtml(r.date)}</td>
+      <td>${escapeHtml(r.in_count)}</td>
+      <td>${escapeHtml(r.out_count)}</td>
+      <td>${escapeHtml(r.last_tap_at)}</td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  el.innerHTML = html;
 }
 
 async function loadLogs() {
